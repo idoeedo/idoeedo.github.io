@@ -1,0 +1,242 @@
+:root {
+  --fs-base: 1rem;
+  --lh-base: 1.6;
+
+  --fs-h1: 1.875rem;
+  --lh-h1: 2.25rem;
+
+  --fs-h2: 1.5rem;
+  --lh-h2: 1.3333333;
+
+  --fs-h3: 1.25rem;
+  --lh-h3: 1.6;
+
+  --fs-toc: 0.9rem;
+  --lh-toc: 1.5rem;
+
+  --header-height: 70px;
+
+  --color-gold-1: #FFF1C2;
+  --color-gold-2: #FDB515;
+  --color-gold-3: #FC9313;
+  --color-gold-4: #E3740A;
+  --color-gold-5: #B55A00;
+
+  --color-blue-1: #D4E3FF;
+  --color-blue-2: #8EBBFF;
+  --color-blue-3: #3F7EE8;
+  --color-blue-4: #174AA8;
+  --color-blue-5: #002676;
+
+  --color-red-1: #FFE2E0;
+  --color-red-2: #FFB3A8;
+  --color-red-3: #FF6F61;
+  --color-red-4: #E5483F;
+  --color-red-5: #B71C1C;
+
+  --color-gray-1:#F5F5F5;
+  --color-gray-2:#E0E0E0;
+  --color-gray-3:#BDBDBD;
+  --color-gray-4:#757575;
+  --color-gray-5:#424242;
+
+  --color-link: var(--color-blue-3);
+  --color-link-hover: var(--color-gold-3);
+  --color-toc-bar: var(--color-gray-4);
+  --color-toc-bar-active: var(--color-gold-2);
+  --color-toc-divider: var(--color-gray-2);
+}
+
+.dark {
+  --color-link: var(--color-blue-2);
+  --color-toc-bar: var(--color-gray-4);
+  --color-toc-divider: var(--color-gray-5);
+}
+
+/* =============================================================================
+    Base
+============================================================================= */
+
+body {
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+}
+
+:is(h1, .first-entry .entry-header h1, .post-title) {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+}
+
+:is(h2, .post-content h2) {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  scroll-margin-top: var(--header-height);
+}
+
+:is(h3, .post-content h3) {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  scroll-margin-top: var(--header-height);
+}
+
+.first-entry { 
+  min-height: auto; 
+}
+
+.header  {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: inherit;
+}
+
+/* =============================================================================
+    Lists
+============================================================================= */
+
+.toc :where(ul) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* =============================================================================
+    Links
+============================================================================= */
+
+.post-content a,
+.toc a {
+  box-shadow: none;
+  text-decoration: none; 
+}
+
+.post-content a {
+  color: var(--color-link);
+}
+
+.post-content a:hover,
+.toc a:hover {
+  box-shadow: none;
+  color: var(--color-link-hover);
+}
+
+.post-content a:focus-visible,
+.toc a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* =============================================================================
+    Table of Contents
+============================================================================= */
+
+.toc {
+  font-size: var(--fs-toc);
+  line-height: var(--lh-toc);
+  border: none;
+}
+
+.toc a {
+  position: relative;
+  display: inline-block;
+  padding-left: 0.6rem;
+  line-height: 1.5;
+}
+
+.toc a::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.25rem;
+  inline-size: 3px;
+  block-size: 0.9rem;
+  background: var(--color-toc-bar);
+  border-radius: 1px;
+}
+
+.toc a.active {
+  font-weight: 800;
+}
+
+.toc a.active::before {
+  background: var(--color-toc-bar-active);
+}
+
+/* =============================================================================
+    Responsive Layout
+============================================================================= */
+
+@media (min-width: 992px) {
+    .main {
+        width: 60%;
+    }
+
+    .toc {
+      position: fixed;
+      inset-inline-start: min(80vw, calc(50vw + (var(--main-width) / 2) + var(--gap)));
+      max-inline-size: max(calc(20vw) - (var(--gap) / 2), ((100vw - var(--main-width)) / 2) - (var(--gap) * 1.5));
+      inset-block-start: calc(var(--header-height) + (var(--gap) * 2));
+      border-inline-start: 4px solid var(--color-toc-divider); 
+      border-radius: 0;
+    }
+
+    .toc details[open] > summary { 
+      display: none; 
+    }
+
+    .toc .inner {
+      margin: 0;
+    }
+
+    .toc ul ul { 
+      display: none;
+    }
+
+    @supports selector(:has(*)) {
+      .toc li:has(> a.active) > ul,
+      .toc li:has(ul a.active) > ul {
+        display: block;
+      }
+    }
+
+    .toc,
+    .dark .toc {
+      background: transparent;
+    }
+
+    .post-content :is(h2, h3) {
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .post-content :is(h2, h3) .anchor {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      order: -1;
+      color: var(--color-red-4);
+      font-weight: inherit;
+    }
+
+    .post-content :is(h2, h3) .anchor:hover {
+      color: var(--color-link-hover);
+    }
+}
+
+@media (max-width: 991px) {
+    .main {
+        width: 95%;
+    }
+}
+
+/* ============================================================================
+  A11y / Motion
+============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,232 @@
+# ==============================================================================
+# 기본 정보
+# ==============================================================================
+
+# theme:
+#   - github.com/adityatelange/hugo-PaperMod
+
+baseURL: "https://idoeedo.github.io/"
+title: "It's Ido"
+
+defaultContentLanguage: "ko"
+defaultContentLanguageInSubdir: true
+
+enableRobotsTXT: true  # 검색 엔지 크롤링 허용 여부
+
+googleAnalytics: "G-X0TJZ7F5QC"
+
+# ==============================================================================
+# 모듈
+# ==============================================================================
+
+module:
+  imports:
+    - path: github.com/adityatelange/hugo-PaperMod
+
+# ==============================================================================
+# 빌드 / 배포 관련
+# ==============================================================================
+
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+pagination:
+  disableAliases: false
+  pagerSize: 5
+  path: "page"
+
+sitemap:
+  changefreq: "daily"
+  filename: "sitemap.xml"
+  priority: 0.5
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+# ==============================================================================
+# 다국어 설정
+# ==============================================================================
+
+languages:
+  ko:
+    languageName: "한국어"
+    languageCode: "ko-kr"
+    weight: 1
+    menu:
+      main:
+        - identifier: "posts"
+          name: "Posts"
+          url: "/posts/"
+          weight: 10
+        - identifier: "tags"
+          name: "Tags"
+          url: "/tags/"
+          weight: 20
+        - name: "Search"
+          url: "/search/"
+          weight: 90
+
+  en:
+    languageName: "English"
+    languageCode: "en-us"
+    weight: 2
+    menu:
+      main:
+        - identifier: "posts"
+          name: "Posts"
+          url: "/posts/"
+          weight: 10
+        - identifier: "tags"
+          name: "Tags"
+          url: "/tags/"
+          weight: 20
+        - name: "Search"
+          url: "/search/"
+          weight: 90
+
+# ==============================================================================
+# PaperMod 테마 파라미터
+# ==============================================================================
+
+params:
+  env: production  # to enable google analytics, opengraph, twitter-cards and schema.
+
+  title: "It's Ido"
+  description: "Ido's personal blog, sharing thoughts on technology, and life."
+  keywords: ["Blog", "Technology"]
+  author: "Ido"  # ["Me", "You"]
+  images: ["images/cover.png"]
+  DateFormat: "2006-01-02"
+
+  defaultTheme: auto  # dark, light
+  disableThemeToggle: false
+  mainSections: ["posts"]
+
+  ShowBreadCrumbs: false
+  ShowReadingTime: false
+  ShowWordCount: false
+  ShowShareButtons: false
+  ShowPostNavLinks: false
+  ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: false
+  UseHugoToc: true
+  disableSpecial1stPost: true
+  disableScrollToTop: false
+  comments: true
+  hidemeta: false
+  hideSummary: true
+  showtoc: true
+  tocopen: true
+
+  assets:
+    # disableHLJS: true # to disable highlight.js
+    # disableFingerprinting: true
+    favicon: "/favicon.ico"
+    favicon16x16: "/favicon-16x16.png"
+    favicon32x32: "/favicon-32x32.png"
+    apple_touch_icon: "/apple-touch-icon.png"
+    # safari_pinned_tab: "<link / abs url>"
+
+  label:
+    text: " "
+    icon: "/apple-touch-icon.png"
+    iconHeight: 35
+
+  # profile-mode
+  profileMode:
+    enabled: false  # needs to be explicitly set
+    title: "It's Ido"
+    subtitle: "Ido's personal blog, sharing thoughts on technology, and life."
+    imageUrl: "/apple-touch-icon.png"
+    imageWidth: 120
+    imageHeight: 120
+    imageTitle: "Ido"
+    buttons:
+      - name: Posts
+        url: posts
+      - name: Tags
+        url: tags
+
+  # home-info mode
+  homeInfoParams:
+    Title: "Hi there 👋"
+    Content: "Ido's personal blog, sharing thoughts on technology, and life."
+
+  socialIcons:
+    # - name: x
+    #   url: "https://x.com/"
+    # - name: stackoverflow
+    #   url: "https://stackoverflow.com"
+    - name: github
+      url: "https://github.com/idoeedo"
+
+  # analytics:
+  #   google:
+  #     SiteVerificationTag: "XYZabc"
+  #   bing:
+  #     SiteVerificationTag: "XYZabc"
+  #   yandex:
+  #     SiteVerificationTag: "XYZabc"
+
+  cover:
+    hidden: true  # hide everywhere but not in structured data
+    hiddenInList: true  # hide on list pages and home
+    hiddenInSingle: true  # hide on single page
+
+  # editPost:
+  #   URL: "https://github.com/<path_to_repo>/content"
+  #   Text: "Suggest Changes"  # edit text
+  #   appendFilePath: true  # to append file path to Edit link
+
+  # for search
+  # https://fusejs.io/api/options.html
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    limit: 10  # refer: https://www.fusejs.io/api/methods.html#search
+    keys: ["title", "permalink", "summary", "content"]
+
+  giscus:
+    repo: "idoeedo/idoeedo.github.io"
+    repoID: "R_kgDOQGMJxg"
+    category: "Announcements"
+    categoryID: "DIC_kwDOQGMJxs4CxAOY"
+    mapping: "specific"
+    strict: "1"
+    reactionsEnabled: "1"
+    emitMetadata: "0"
+    inputPosition: "top"
+    theme: "preferred_color_scheme"
+    loading: "lazy"
+
+# ==============================================================================
+# 출력 형식
+# ==============================================================================
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+# ==============================================================================
+# 마크업 / 하이라이트
+# ==============================================================================
+
+# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
+pygmentsUseClasses: true
+
+markup:
+  highlight:
+    noClasses: false
+    anchorLineNos: true
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    style: monokai
