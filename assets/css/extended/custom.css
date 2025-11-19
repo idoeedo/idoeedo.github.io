@@ -1,60 +1,73 @@
+/* =============================================================================
+    Variables & Theme
+============================================================================= */
+
 :root {
+
+  /* Typography: Font Size */
   --fs-base: 1rem;
-  --lh-base: 1.6;
-
+  --fs-code: 0.825rem;
   --fs-h1: 1.875rem;
-  --lh-h1: 2.25rem;
-
   --fs-h2: 1.5rem;
-  --lh-h2: 1.3333333;
-
   --fs-h3: 1.25rem;
-  --lh-h3: 1.6;
-
   --fs-toc: 0.9rem;
-  --lh-toc: 1.5rem;
 
+  /* Typography: Line Height */
+  --lh-base: 1.6;
+  --lh-code: 1.6;
+  --lh-h1: 1.6;
+  --lh-h2: 1.6;
+  --lh-h3: 1.6;
+  --lh-toc: 1.6;
+
+  /* Layout Dimensions */
+  --main-width: 720px;    /* 기존 변수 */
+  --gap: 24px;            /* 기존 변수 */
   --header-height: 70px;
+  --gap-content-p: 16px;
 
+  /* Palette: Gold */
   --color-gold-1: #FFF1C2;
   --color-gold-2: #FDB515;
   --color-gold-3: #FC9313;
   --color-gold-4: #E3740A;
   --color-gold-5: #B55A00;
 
+  /* Palette: Blue */
   --color-blue-1: #D4E3FF;
   --color-blue-2: #8EBBFF;
   --color-blue-3: #3F7EE8;
   --color-blue-4: #174AA8;
   --color-blue-5: #002676;
 
+  /* Palette: Red */
   --color-red-1: #FFE2E0;
   --color-red-2: #FFB3A8;
   --color-red-3: #FF6F61;
   --color-red-4: #E5483F;
   --color-red-5: #B71C1C;
 
+  /* Palette: Gray */
   --color-gray-1:#F5F5F5;
   --color-gray-2:#E0E0E0;
   --color-gray-3:#BDBDBD;
   --color-gray-4:#757575;
   --color-gray-5:#424242;
 
+  /* Semantic Colors */
+  --color-inline-code-text: #EB5757;                 /* 노션 색상 */
+  --color-inline-code-bg: rgba(135, 131, 120, .15);  /* 노션 색상 */
+
   --color-link: var(--color-blue-3);
-  --color-link-hover: var(--color-gold-3);
+  --color-link-hover: var(--color-gold-2);
   --color-toc-bar: var(--color-gray-4);
   --color-toc-bar-active: var(--color-gold-2);
-  --color-toc-divider: var(--color-gray-2);
+  --color-toc-divider: var(--color-gray-3);
 }
 
-.dark {
-  --color-link: var(--color-blue-2);
-  --color-toc-bar: var(--color-gray-4);
-  --color-toc-divider: var(--color-gray-5);
-}
 
 /* =============================================================================
-    Base
+    Global & Base Styles
 ============================================================================= */
 
 body {
@@ -62,6 +75,9 @@ body {
   line-height: var(--lh-base);
 }
 
+/* -------------------------------
+    Headings
+------------------------------- */
 :is(h1, .first-entry .entry-header h1, .post-title) {
   font-size: var(--fs-h1);
   line-height: var(--lh-h1);
@@ -79,10 +95,9 @@ body {
   scroll-margin-top: var(--header-height);
 }
 
-.first-entry { 
-  min-height: auto; 
-}
-
+/* -------------------------------
+    Header
+------------------------------- */
 .header  {
   position: sticky;
   top: 0;
@@ -90,148 +105,185 @@ body {
   background-color: inherit;
 }
 
+.first-entry { 
+  min-height: auto; 
+}
+
+.entry-footer {
+  margin-top: 10px;
+}
+
+
 /* =============================================================================
-    Lists
+    Component: Post Content
 ============================================================================= */
 
-.toc :where(ul) {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.post-content { 
+  /* Paragraphs */
+  & p {
+    text-indent: 0.7rem;
+    margin-block: var(--gap-content-p);
+  }
+
+  /* Headings Styles inside content */    
+  & h4 { 
+    margin-top: 2.5rem; 
+  }
+
+  /* Links */
+  & a {
+    box-shadow: none;
+    color: var(--color-link);
+
+    &:hover {
+      color: var(--color-link-hover);
+    }
+  }
+
+  /* Horizontal Rule */
+  & hr {
+    margin: 3rem 0;
+  }
+
+  /* Inline Code */
+  & code {
+    margin: 0;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: var(--fs-code);
+    line-height: var(--lh-code);
+    background: var(--color-inline-code-bg);
+    color: var(--color-inline-code-text);
+  }
+
+  /* Desktop Layout */
+  @media (min-width: 992px) {
+    & :is(h2, h3) {
+      display: flex;
+      gap: 0.35rem;
+
+      & .anchor {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        order: -1;
+        color: var(--color-blue-3);
+        font-weight: inherit;
+
+        &:hover {
+          color: var(--color-link-hover);
+        }
+      }
+    }
+  }
 }
+
 
 /* =============================================================================
-    Links
-============================================================================= */
-
-.post-content a,
-.toc a {
-  box-shadow: none;
-  text-decoration: none; 
-}
-
-.post-content a {
-  color: var(--color-link);
-}
-
-.post-content a:hover,
-.toc a:hover {
-  box-shadow: none;
-  color: var(--color-link-hover);
-}
-
-.post-content a:focus-visible,
-.toc a:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
-/* =============================================================================
-    Table of Contents
+    Component: Table of Contents (TOC)
 ============================================================================= */
 
 .toc {
   font-size: var(--fs-toc);
   line-height: var(--lh-toc);
   border: none;
-}
 
-.toc a {
-  position: relative;
-  display: inline-block;
-  padding-left: 0.6rem;
-  line-height: 1.5;
-}
+  & ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-.toc a::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: 0.25rem;
-  inline-size: 3px;
-  block-size: 0.9rem;
-  background: var(--color-toc-bar);
-  border-radius: 1px;
-}
+  & a {
+    box-shadow: none;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    padding-left: 0.6rem;
+    line-height: 1.5;
 
-.toc a.active {
-  font-weight: 800;
-}
-
-.toc a.active::before {
-  background: var(--color-toc-bar-active);
-}
-
-/* =============================================================================
-    Responsive Layout
-============================================================================= */
-
-@media (min-width: 992px) {
-    .main {
-        width: 60%;
+    /* Active Indicator Bar */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-start: 0.25rem;
+      inline-size: 3px;
+      block-size: 0.9rem;
+      background: var(--color-toc-bar);
+      border-radius: 1px;
     }
 
-    .toc {
-      position: fixed;
-      inset-inline-start: min(80vw, calc(50vw + (var(--main-width) / 2) + var(--gap)));
-      max-inline-size: max(calc(20vw) - (var(--gap) / 2), ((100vw - var(--main-width)) / 2) - (var(--gap) * 1.5));
-      inset-block-start: calc(var(--header-height) + (var(--gap) * 2));
-      border-inline-start: 4px solid var(--color-toc-divider); 
-      border-radius: 0;
+    &:hover {
+      box-shadow: none;
+      color: var(--color-link-hover);
     }
 
-    .toc details[open] > summary { 
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    &.active {
+      font-weight: 800;
+      &::before {
+        background: var(--color-toc-bar-active);
+      }
+    }
+  }
+
+  /* Desktop Layout */
+  @media (min-width: 992px) {
+    position: fixed;
+    background: transparent !important;
+
+    /* Complex calc based on main width */
+    inset-inline-start: min(80vw, calc(50vw + (var(--main-width) / 2) + var(--gap)));
+    max-inline-size: max(calc(20vw) - (var(--gap) / 2), ((100vw - var(--main-width)) / 2) - (var(--gap) * 1.5));
+    inset-block-start: calc(var(--header-height) + (var(--gap) * 2));
+    border-inline-start: 4px solid var(--color-toc-divider);
+    border-radius: 0;
+
+    & details[open] > summary { 
       display: none; 
     }
 
-    .toc .inner {
-      margin: 0;
+    & .inner { 
+      margin: 0; 
     }
-
-    .toc ul ul { 
-      display: none;
+    
+    /* Auto-folding logic */
+    & ul ul { 
+      display: none; 
     }
 
     @supports selector(:has(*)) {
-      .toc li:has(> a.active) > ul,
-      .toc li:has(ul a.active) > ul {
+      & li:has(> a.active) > ul,
+      & li:has(ul a.active) > ul {
         display: block;
       }
     }
-
-    .toc,
-    .dark .toc {
-      background: transparent;
-    }
-
-    .post-content :is(h2, h3) {
-      display: inline-flex;
-      gap: 0.35rem;
-    }
-
-    .post-content :is(h2, h3) .anchor {
-      display: inline-block;
-      margin: 0;
-      padding: 0;
-      order: -1;
-      color: var(--color-red-4);
-      font-weight: inherit;
-    }
-
-    .post-content :is(h2, h3) .anchor:hover {
-      color: var(--color-link-hover);
-    }
+  }
 }
 
-@media (max-width: 991px) {
-    .main {
-        width: 95%;
-    }
+
+/* =============================================================================
+    Layout & Responsibility
+============================================================================= */
+
+.main {
+  width: 95%; /* Mobile Default */
+
+  @media (min-width: 992px) {
+    width: 60%;
+  }
 }
+
 
 /* ============================================================================
-  A11y / Motion
+    A11y: Reduced Motion
 ============================================================================ */
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
