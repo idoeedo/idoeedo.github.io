@@ -194,9 +194,9 @@ params:
 
   giscus:
     repo: "idoeedo/idoeedo.github.io"
-    repoID: "R_kgDOQGMJxg"
+    repoID: "R_kgDOQO7g1Q"
     category: "Announcements"
-    categoryID: "DIC_kwDOQGMJxs4CxAOY"
+    categoryID: "DIC_kwDOQO7g1c4Cx9H7"
     mapping: "specific"
     strict: "1"
     reactionsEnabled: "1"
