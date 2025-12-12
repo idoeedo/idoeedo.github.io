@@ -1,0 +1,50 @@
+{{- $src := .Get "src" -}}
+{{- $caption := .Get "caption" -}}
+{{- $link := .Get "link" -}}
+{{- $target := .Get "target" -}}
+{{- $alt := .Get "alt" -}}
+{{- $attr := .Get "attr" -}}
+{{- $attrlink := .Get "attrlink" -}}
+
+{{- $img := .Page.Resources.GetMatch $src -}}
+
+{{- if not $img -}}
+  {{- range .Page.Translations -}}
+    {{- if not $img -}}
+      {{- $img = .Resources.GetMatch $src -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+<figure{{ with .Get "class" }} class="{{ . }}"{{ end }}>
+    {{- if $link -}}
+        <a href="{{ $link }}"{{ with $target }} target="{{ . }}"{{ end }}{{ with .Get "rel" }} rel="{{ . }}"{{ end }}>
+    {{- end -}}
+
+    <img src="{{ if $img }}{{ $img.RelPermalink }}{{ else }}{{ $src | absURL }}{{ end }}"
+         {{- if or $alt $caption }}
+         alt="{{ with $alt }}{{ . }}{{ else }}{{ $caption | markdownify| plainify }}{{ end }}"
+         {{- end -}}
+         {{- with .Get "width" }} width="{{ . }}"{{ end -}}
+         {{- with .Get "height" }} height="{{ . }}"{{ end -}}
+    />
+
+    {{- if $link }}</a>{{ end -}}
+
+    {{- if or (or $caption $attr) -}}
+        <figcaption>
+            {{- if $caption -}}
+                {{ $caption | markdownify }}
+            {{- end -}}
+            {{- if or $attr $attrlink -}}
+                <p>
+                {{- if $attrlink -}}
+                    <a href="{{ $attrlink }}">
+                {{- end -}}
+                {{- $attr | markdownify -}}
+                {{- if $attrlink }}</a>{{ end }}
+                </p>
+            {{- end -}}
+        </figcaption>
+    {{- end -}}
+</figure>
