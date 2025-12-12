@@ -1,55 +1,57 @@
 +++
 date = '2025-11-24T11:58:30+09:00'
 draft = false
-title = 'Setting Up My First Ubuntu Home Server'
-tags = ['home server', 'ubuntu']
+title = 'My First Ubuntu Home Server Build Log'
+tags = ['Home Server', 'Ubuntu']
 translationKey = 'first-home-server-setup'
 +++
 
 
 
-This post documents the process I followed to set up my very first home server. I cover how I installed **Ubuntu Server LTS** on a Mini PC and the **fundamental operation and security configurations** I applied. If you're a first-timer setting up your own home server, I hope this serves as a light reference—a simple 'this is how one person did it.'
+This post documents the process of setting up my very first home server. I’ve summarized how I installed **Ubuntu Server LTS** on a Mini PC and configured the **basic operations and security settings**. If you are building a home server for the first time, please take this as a light reference on "how this person set things up."
 
-If you have any questions or spot anything that needs correction, please let me know in the comments. 
-
-Let's get started!
+If you have any questions or see anything that needs correction, please feel free to leave a comment. Let's get started!
 
 --------------------------------------------------------------------------------
 
-## 1 Choosing the Hardware
+## 1 Hardware Selection
 
-After considering what hardware to use for the server, I decided on a **Mini PC** for the following reasons:
+After considering what equipment to use for the server, I chose a **Mini PC** for the following reasons:
 
-* **Power Efficiency**: It consumes less power than a desktop, resulting in lower electricity bills even when running 24/7.
-* **Space Saving**: Its small size means it can be placed almost anywhere.
-* **Performance & Scalability**: It offers better performance than a Raspberry Pi, and upgrading the RAM or SSD is easy if needed.
-
---------------------------------------------------------------------------------
-
-## 2 Ubuntu Installation
-
-I connected a monitor and keyboard to the Mini PC and installed the operating system. 
-
-I chose [**Ubuntu Server LTS**](https://ubuntu.com/download/server) because it's widely adopted and has abundant documentation.
+- **Power Efficiency**: It consumes less power compared to a desktop, so leaving it on 24/7 is less of a burden on the electricity bill.
+- **Space Efficiency**: Its small size allows it to be placed anywhere.
+- **Performance & Scalability**: It performs better than a Raspberry Pi, and it is easy to replace RAM or SSDs if needed.
 
 --------------------------------------------------------------------------------
 
-## 3 Basic System Configuration
+## 2 Linux Installation
 
-A freshly installed OS is barely 'functional.' I performed several basic configurations to make server operation and management easier.
+I connected a monitor and keyboard to the Mini PC and installed the operating system. I chose [**Ubuntu Server LTS**](https://ubuntu.com/download/server) because it is popular and has extensive reference materials available.
+
+{{< note emoji="" title="Tip">}}
+
+During the installation process, when the option `Install OpenSSH server` appears, make sure to check it.
+
+{{< /note >}}
 
 --------------------------------------------------------------------------------
 
-### 3.1 Package Update
+## 3 Basic System Settings
 
-The packages and kernel may have been updated since the ISO image was created. Therefore, the first step was to update all packages to their latest versions.
+A freshly installed server is merely in a state of "just up and running." To make server operation and management convenient and secure, I proceeded with a few basic configurations.
+
+--------------------------------------------------------------------------------
+
+### 3.1 Package Updates
+
+There may have been package and kernel updates between the time the ISO image was created and the current time. For security, the first thing I did was update everything to the latest state.
 
 ```sh
 sudo apt update
 sudo apt full-upgrade -y
 ```
 
-Since this may include a kernel update, I performed a reboot.
+Since a kernel update might have been included, I rebooted the system.
 
 ```sh
 sudo reboot 
@@ -59,7 +61,7 @@ sudo reboot
 
 ### 3.2 Switching to `zsh`
 
-The default shell is `bash`, but I wanted to easily use plugins for features like autocompletion and syntax highlighting, so I switched the default shell to `zsh`.
+The default shell is `bash`, but I wanted to comfortably use plugins for auto-completion and syntax highlighting, so I switched the default shell to `zsh`.
 
 ```sh
 # Install zsh
@@ -68,25 +70,25 @@ sudo apt install zsh -y
 # Verify installation
 which zsh
 
-# Change default shell
+# Change shell
 chsh -s $(which zsh)
 ```
 
-Now, if you disconnect and reconnect the SSH session or reboot the server, `zsh` will be the default shell.
+Now, if you disconnect your SSH session and log in again (or reboot the server), `zsh` will appear as the default shell.
 
-Applying [Oh My Zsh](https://ohmyz.sh/) or [Powerlevel10k](https://github.com/romkatv/powerlevel10k) can make the terminal look nicer and be more convenient, but for this post, I'll stop at 'changing the default shell to `zsh`.'
+Applying [Oh My Zsh](https://ohmyz.sh/) or [Powerlevel10k](https://github.com/romkatv/powerlevel10k) makes the terminal prettier and more convenient, but this post will only cover "changing the default shell to `zsh`."
 
 --------------------------------------------------------------------------------
 
 ### 3.3 Timezone Setting
 
-It's much more convenient to review logs if the server time aligns with my actual activity time. So, I changed the server's timezone to Korea Time (`Asia/Seoul`).
+It is much more convenient when viewing logs if the server time matches the time I am actually active. Therefore, I changed the server's timezone to Korea Standard Time (`Asia/Seoul`).
 
 ```sh
 # Check current timezone
 timedatectl status
 
-# Change timezone
+# Set timezone
 sudo timedatectl set-timezone Asia/Seoul
 
 # Verify change
@@ -97,11 +99,11 @@ timedatectl status
 
 ### 3.4 Swap Configuration
 
-Since my Mini PC doesn't have a large amount of RAM, I was concerned that 'running heavy tasks might kill a process due to OOM (Out Of Memory).' To mitigate this, I checked the **Swap** safeguard and adjusted its settings. 
+My Mini PC does not have abundant RAM. If I run heavy tasks and memory runs out, Linux might forcibly kill processes. To prevent this, I checked the **Swap** settings.
 
-I understand Swap simply as '**reserve memory set aside on the disk for situations where RAM is running low.**'
+Simply put, Swap is "**spare memory borrowed from the disk when RAM is insufficient.**"
 
-#### [ 3.4.1 Checking Swap Status ]
+#### [ 3.4.1 Check Swap Status ]
 
 First, I checked the current memory and Swap status.
 
@@ -109,48 +111,48 @@ First, I checked the current memory and Swap status.
 # Check memory and swap usage
 free -h
 
-# Check active swap devices
+# Check active swap
 swapon --show
 
-# Check if auto-mounted
+# Check auto-mount setting on reboot
 grep swap /etc/fstab
 ```
 
-The latest Ubuntu Server automatically creates a `/swap.img` file during installation. My server already had a Swap file configured, so I decided to use it as is without adjusting its size.
+The latest Ubuntu Server automatically creates a `/swap.img` file during installation. Upon checking, my server already had a Swap file created and registered in `fstab`, so I decided to use it as is.
 
-#### [ 3.4.2 Adjusting Swappiness]
+#### [ 3.4.2 Adjusting Swappiness ]
 
-The value that controls when the system starts using Swap is `vm.swappiness`. The default value is `60`, which uses Swap quite aggressively. I wanted the server to '**use RAM as much as possible and only resort to Swap when absolutely necessary,**' so I lowered the value to `10`.
+The value that determines how aggressively Swap is used is `vm.swappiness`. The default value of `60` uses Swap quite frequently. To protect SSD lifespan and maintain performance, I lowered the value to `10`, meaning "**use RAM as much as possible, and use Swap only when absolutely necessary.**"
 
 ```sh
 echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
 
-# Apply setting
+# Apply settings
 sudo sysctl -p /etc/sysctl.d/99-swappiness.conf
 
-# Verify setting
+# Verify settings
 cat /proc/sys/vm/swappiness
 ```
 
 --------------------------------------------------------------------------------
 
-### 3.5 Automated Security Updates
+### 3.5 Auto Security Updates
 
-Since I might not be able to check the home server every day, I wanted to set up automatic security patch updates. I used `unattended-upgrades` for this.
+Since I might not check the home server every day, I configured `unattended-upgrades` so that security patches are installed automatically.
 
 #### [ 3.5.1 Installation & Activation ]
 
 ```sh
-# Install the package
+# Install package
 sudo apt install unattended-upgrades -y
 
-# Activate the feature (select 'Yes')
+# Enable feature (Select 'Yes')
 sudo dpkg-reconfigure unattended-upgrades
 ```
 
-#### [ 3.5.2 Option Configuration ]
+#### [ 3.5.2 Auto-Remove Unused Dependencies ]
 
-I wanted to automatically clean up unnecessary packages, so I enabled the `Remove-Unused-Dependencies` option in the configuration file. This option automatically cleans up older kernel versions or libraries that are no longer needed during the update process.
+To prevent old kernels or unused libraries from piling up during updates, I enabled the auto-remove option, `Remove-Unused-Dependencies`.
 
 ```sh
 sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
@@ -163,13 +165,13 @@ Unattended-Upgrade::Remove-Unused-Dependencies "true";
 
 #### [ 3.5.3 Adding Reboot Notification ]
 
-Rebooting is sometimes required after an automatic update. I didn't want the server to reboot automatically, so I chose to display a highly visible notification when logging in via SSH. 
-
-I added a simple script to the bottom of my `.zshrc` file.
+There are cases where a reboot is required after a security patch. I dislike the server rebooting on its own, so instead of enabling the auto-reboot option, I added a script to `.zshrc` to display a notification upon SSH login.
 
 ```sh
 nano ~/.zshrc
 ```
+
+I pasted the following content at the bottom of the file.
 
 ```sh
 RED="$(tput setaf 1)"
@@ -187,51 +189,53 @@ if [ -f /var/run/reboot-required ]; then
 fi
 ```
 
-Now, every time I SSH into the server, I can tell at a glance if a reboot is needed.
+--------------------------------------------------------------------------------
+
+## 4 Accessing from Inside the House
+
+I disconnected the monitor and keyboard from the Mini PC and configured it for remote access.
 
 --------------------------------------------------------------------------------
 
-## 4 Accessing from Within the Local Network
+### 4.1 SSH Connection Prep
 
-Now, I'll disconnect the monitor and keyboard from the Mini PC and configure it for remote access.
+#### [ 4.1.1 Check SSH Daemon Status ]
 
---------------------------------------------------------------------------------
-
-### 4.1 Preparing the SSH Server
-
-#### [ 4.1.1 Checking SSH Daemon Status ]
-
-Since SSH was installed during the Ubuntu Server setup, I checked if it was running correctly.
+Since I installed SSH during the Ubuntu Server installation process, I checked if SSH was running properly.
 
 ```sh
 sudo systemctl status ssh
 ```
 
-#### [ 4.1.2 Checking Server LAN IP ]
+#### [ 4.1.2 Check Server IP ]
 
-To connect to the server from a laptop on the same router, I needed the server's LAN IP.
+I checked the currently assigned IP address (in the format `192.168.x.x`) on the server with the following command:
 
 ```sh
 hostname -I
 ```
 
-I noted down the IP address that looks like `192.168.x.x`.
-
 #### [ 4.1.3 First SSH Connection ]
 
-Next, I attempted to connect from my laptop, which is using the same router as the home server.
+I attempted to connect from a laptop connected to the same router.
 
 ```sh
 ssh -p 22 {username}@192.168.x.x
 ```
 
-Since the connection worked, I removed the monitor and keyboard connected to the Mini PC. All subsequent work was done by connecting to the server via SSH from my laptop.
+If the connection is successful, you can now remove the monitor and keyboard from the Mini PC. All subsequent work was done comfortably via SSH from the laptop.
 
 --------------------------------------------------------------------------------
 
-### 4.2 Activating UFW
+### 4.2 Enabling UFW
 
-I enabled **UFW (Uncomplicated Firewall)**, which is Ubuntu's default firewall.
+I enabled Ubuntu's default firewall, **UFW (Uncomplicated Firewall)**.
+
+{{< note emoji="⚠️" title="Warning">}}
+
+If you enable the firewall without opening the SSH port, the connection will drop, and you will have to reconnect the monitor and keyboard. You must follow the order below.
+
+{{< /note >}}
 
 ```sh
 # Allow default SSH port (22)
@@ -241,46 +245,62 @@ sudo ufw allow OpenSSH
 sudo ufw enable
 
 # Check status
-sudo ufw status 
+sudo ufw status
 ```
+
+{{< note emoji="" title="UFW and Docker Conflict Issue">}}
+
+Later, when installing Docker, you need to be aware of the "**UFW and Docker conflict issue.**" This is a common security issue; simply put, "even if a user opens only specific ports with UFW, running a Docker container might expose other ports to the outside."
+
+Please refer to solutions such as binding ports only to localhost (`127.0.0.1`) or using tools like `ufw-docker`.
+
+{{< /note >}}
 
 --------------------------------------------------------------------------------
 
-### 4.3 Changing the SSH Port
+### 4.3 Changing SSH Port
 
-The default SSH port, `22`, is the port most frequently knocked on by bots worldwide. If the server is exposed to the internet, logs will quickly accumulate with connection attempts. So, I changed the port from `22` to another number (e.g., `2222`).
+The default port `22` is the path most frequently attacked by automated hacker bots. Just changing the port number significantly reduces Brute Force attack logs. As an example, I changed it to port `2222`.
 
-#### [ 4.3.1 Allowing the New Port ]
+#### [ 4.3.1 Allow New Port ]
 
-First, I opened the new port on the firewall. I'll use port `2222` as an example.
+Before changing the settings, I opened the firewall first. Otherwise, I could be locked out immediately after restarting the service.
 
 ```sh
 sudo ufw allow 2222/tcp
 ```
 
-#### [ 4.3.2 Modifying the Configuration ]
+#### [ 4.3.2 Edit Configuration ]
 
-I changed the port number in the configuration file.
+I backed up the configuration file just in case, and then edited the file.
 
 ```sh
+# Backup original config file
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+# Edit config file
 sudo nano /etc/ssh/sshd_config
 ```
 
+I found the part written as `#Port 22`, removed the comment (`#`), and changed the number.
+
 ```sh
-#Port 22
-
-↓↓↓
-
 Port 2222
 ```
 
-In Ubuntu, files in `/etc/ssh/sshd_config.d/*.conf` are also read, so I checked if the port number was being redefined elsewhere. If another file contained a port number setting, I had to change it to `2222` in that file as well.
+In Ubuntu, `/etc/ssh/sshd_config.d/*.conf` files can override the main configuration. I checked if any other files were defining the port number. If another file has a port number setting, you must change it there as well.
 
 ```sh
 sudo grep -R "Port" /etc/ssh/sshd_config.d/
 ```
 
-After making the change, I restarted SSH.
+#### [ 4.3.3 Restart & Test ]
+
+{{< note emoji="⚠️" title="Warning">}}
+
+Do not close the current terminal window. If the configuration gets messed up and you cannot connect, the currently connected session is your lifeline. You must keep the current window open until you verify connection in a new terminal window.
+
+{{< /note >}}
 
 ```sh
 # Check SSH configuration syntax
@@ -290,19 +310,17 @@ sudo sshd -t
 sudo systemctl restart ssh
 ```
 
-#### [ 4.3.3 Testing Connection on the New Port ] 
-
-Without closing the currently connected terminal, I opened a new one and tried connecting with the new port.
+Without closing the current terminal, I opened a new terminal and attempted to connect via the new port.
 
 ```sh
 ssh -p 2222 {username}@192.168.x.x
 ```
 
-If the connection is successful, SSH is working correctly on the new port.
+I confirmed that the connection works normally in the new terminal.
 
-#### [ 4.3.4 Closing the Default Port ]
+#### [ 4.3.4 Close Default Port ]
 
-After confirming the new port works, I deleted the rule allowing connections on port `22`.
+I deleted the unused port 22 rule from the firewall.
 
 ```sh
 sudo ufw delete allow OpenSSH
@@ -311,30 +329,27 @@ sudo ufw delete allow OpenSSH
 sudo ufw status
 ```
 
-SSH now only accepts connections on port `2222`.
+Now, SSH only accepts connections on port `2222`.
 
 --------------------------------------------------------------------------------
 
-### 4.4 Changing SSH Login Method
+### 4.4 Setting up SSH Key Login
 
-For security, I opted to **allow connections only from devices with the correct SSH key** and **disable password-based login**.
+For security, I disabled password entry and configured it so that **only devices with a registered SSH Key File can connect.**
 
-#### [ 4.4.1 Generating Key Pair ]
+#### [ 4.4.1 Generate and Transfer Key Pair ]
 
-I generated the SSH key on my laptop.
+I performed this step on the **laptop (Client) I wanted to connect from**, not the server.
 
 ```sh
-# Use Ed25519 algorithm
 ssh-keygen -t ed25519 -C "homeserver"
 ```
 
-I copied the generated public key to the server.
+I transferred the generated public key from the laptop to the server.
 
 ```sh
 ssh-copy-id -i ~/.ssh/id_ed25519.pub -p 2222 {username}@192.168.x.x
 ```
-
-#### [ 4.4.2 Testing Key Login ]
 
 I checked if I could connect without a password.
 
@@ -342,33 +357,29 @@ I checked if I could connect without a password.
 ssh -p 2222 {username}@192.168.x.x
 ```
 
-If logged in successfully, my laptop can now access the server using only the SSH key.
+If logged in successfully, the laptop can now access the server using the SSH key.
 
-#### [ 4.4.3 Blocking Password Login ]
+#### [ 4.4.2 Block Password Login ]
 
-After confirming that key login worked, I disabled password login. 
+After confirming that key login works well, I turned off password login.
 
-I removed the comment (`#`) from the `PasswordAuthentication` option in the configuration file and changed it to `no`.
+In the configuration file, I removed the comment (`#`) from the `PasswordAuthentication` option and changed it to `no`.
 
 ```sh
 sudo nano /etc/ssh/sshd_config
 ```
 
 ```sh
-#PasswordAuthentication yes
-
-↓↓↓
-
 PasswordAuthentication no
 ```
 
-Just like with the port number setting, I had to check if any file in `/etc/ssh/sshd_config.d/*.conf` was overriding this setting. (In fact, another file defined the same option, so I opened it and changed it to `no` there as well.)
+As with the port number setting, I checked if `/etc/ssh/sshd_config.d/*.conf` files were overriding this setting. (Actually, the same option was defined in another file, so I opened that file and changed it to `no` as well.)
 
 ```sh
 sudo grep -R "PasswordAuthentication" /etc/ssh/sshd_config.d/
 ```
 
-After making the change, I restarted SSH.
+Since the settings were changed, I restarted SSH.
 
 ```sh
 # Check SSH configuration syntax
@@ -380,31 +391,27 @@ sudo systemctl restart ssh
 
 --------------------------------------------------------------------------------
 
-### 4.5 Disabling Root Login
+### 4.5 Disable Root Login
 
-Next, I prevented **direct root account login**. 
+Next, I blocked **direct login with the root account**.
 
-I removed the comment (`#`) from the `PermitRootLogin` option in the configuration file and changed it to `no`.
+In the configuration file, I removed the comment (`#`) from the `PermitRootLogin` option and changed it to `no`.
 
 ```sh
 sudo nano /etc/ssh/sshd_config
 ```
 
 ```sh
-#PermitRootLogin yes
-
-↓↓↓
-
 PermitRootLogin no
 ```
 
-I also checked if the setting was overridden in `/etc/ssh/sshd_config.d/*.conf`, just as I did with the port number setting. If another file defined the same option, I had to open it and change it to `no` there as well.
+I checked if any config files were overriding this setting.
 
 ```sh
 sudo grep -R "PermitRootLogin" /etc/ssh/sshd_config.d/
 ```
 
-After making the change, I restarted SSH.
+Since the settings were changed, I restarted SSH.
 
 ```sh
 # Check SSH configuration syntax
@@ -418,9 +425,9 @@ sudo systemctl restart ssh
 
 ### 4.6 Fail2Ban Configuration
 
-Even with the settings above, someone who discovers the port can still constantly attempt SSH connections. Although disabling password login makes it hard to breach, the logs could become flooded with failed attempts. 
+Even with these settings, someone who figures out the port can continuously attempt SSH connections. Since password login is disabled, it won't be easily breached, but the logs can be flooded with failure logs.
 
-So, I installed [**Fail2Ban**](https://github.com/fail2ban/fail2ban) to temporarily block any IP address that fails to log in after a certain number of attempts.
+So, I installed [**Fail2Ban**](https://github.com/fail2ban/fail2ban) to block IPs that fail a certain number of times for a certain period.
 
 #### [ 4.6.1 Installation ]
 
@@ -432,31 +439,31 @@ sudo apt install fail2ban -y
 systemctl status fail2ban
 ```
 
-#### [ 4.6.2 Creating Configuration File ]
+#### [ 4.6.2 Create Configuration File ]
 
-The default configuration file (`/etc/fail2ban/jail.conf`) might be overwritten during package updates, so I created a new file, `/etc/fail2ban/jail.local`, to override the default settings.
+Since the default configuration file (`/etc/fail2ban/jail.conf`) might be overwritten during package updates, I created `/etc/fail2ban/jail.local` to override the default settings.
 
 ```sh
 sudo nano /etc/fail2ban/jail.local
 ```
 
-I configured it as follows. For `port`, I used the SSH port number I had previously changed (e.g., `2222`).
+I configured it as follows. For `port`, I entered the SSH port number I changed earlier (e.g., `2222`).
 
 ```toml
 [DEFAULT]
 
-# (e.g., ban for 1 hour if 5 failures occur within 10 minutes)
+# (e.g., 5 failures in 10 minutes -> 1 hour ban)
 bantime = 1h 
 findtime = 10m 
 maxretry = 5  
 
-# Prevent banning my own IP (Localhost)
+# Prevent blocking my IP (Localhost)
 ignoreip = 127.0.0.1/8
 
-# Specify ufw as the banning action since I'm using UFW
+# Since using UFW, set ban action to ufw
 banaction = ufw
 
-# Log storage location
+# Log location
 logtarget = /var/log/fail2ban.log
 
 
@@ -467,13 +474,13 @@ port = 2222
 backend = systemd
 ```
 
-#### [ 4.6.3 Applying Settings ]
+#### [ 4.6.3 Apply Settings ]
 
 ```sh
-# Start automatically at boot
+# Auto-start on boot
 sudo systemctl enable fail2ban
 
-# Apply configuration
+# Apply settings
 sudo systemctl restart fail2ban
 
 # Check status
@@ -482,72 +489,70 @@ sudo systemctl status fail2ban
 
 --------------------------------------------------------------------------------
 
-## 5 Accessing from Outside the Local Network
+## 5 Accessing from Outside
 
-The server configured in Chapter 4 was only 'accessible from within the home network.' Now, I'll set it up so it can be safely accessed from outside the home. 
+The server configured in Chapter 4 was a "server that can only be used inside the house." Chapter 5 covers how to configure the server so that it can be safely accessed from outside the house.
 
-It's possible to expose the server directly to the internet by just enabling port forwarding on the router. However, I wanted an extra layer of security, so I decided to use [**Tailscale**](https://tailscale.com/). 
+It is possible to expose the server directly to the internet by opening port forwarding on the router. However, I wanted to create one more safety net in the middle, so I decided to use [**Tailscale**](https://tailscale.com/).
 
-My goal is to learn server operation from the ground up, so I chose the '**SSH server + Tailscale network**' combination. For those who prioritize convenience, using the '**Tailscale SSH**' feature offered by Tailscale is also an option.
+My goal is to learn server operations from the ground up, so I chose the "**SSH Server + Tailscale Network**" combination. For those who prioritize convenience, using the "**Tailscale SSH**" feature provided by Tailscale is also an option.
 
 --------------------------------------------------------------------------------
 
 ### 5.1 Using Tailscale
 
-#### [ 5.1.1 Installation & Registration ]
+#### [ 5.1.1 Install & Register ]
 
 I installed Tailscale on the home server.
 
-Running `sudo tailscale up` displays an authentication URL in the terminal. Opening this URL in a browser and logging in registers the home server to my Tailscale network.
-
 ```sh
-# Run the installation script
+# Run installation script
 curl -fsSL https://tailscale.com/install.sh | sh
 
-# Start the service (log in with the authentication URL displayed)
+# Start service (Login with the displayed auth URL)
 sudo tailscale up
 ```
 
-After installing and logging into Tailscale on my laptop, I could see the Tailscale IP (`100.x.x.x`) for each device on the Tailscale dashboard.
+Running `sudo tailscale up` displays an authentication URL in the terminal. Opening this URL in a browser and logging in registers the home server to my Tailscale network.
+
+Afterwards, I installed and logged into Tailscale on my laptop as well, and checked the Tailscale IP (`100.x.x.x`) of each device on the Tailscale dashboard.
 
 #### [ 5.1.2 SSH Connection Test ]
 
-I tested the SSH connection from my laptop using the home server's Tailscale IP. The port number is `2222`, which I had changed earlier.
+I tested the SSH connection from the laptop to the home server's Tailscale IP. The port number is `2222`, which I changed earlier.
 
 ```sh
 ssh -p 2222 {username}@{Tailscale_IP}
 ```
 
-Thanks to Tailscale, I can now connect to my home server from outside the home without router port forwarding.
+Thanks to Tailscale, I can now access the home server directly from outside without router port forwarding.
 
 #### [ 5.1.3 Key Expiry Setting ]
 
-Tailscale keys for each device are set to expire every 180 days by default. 
+Tailscale is set up so that each device's key expires every 180 days by default.
 
-I was concerned that 'the server might suddenly disappear from Tailscale,' so I enabled the '**Disable key expiry**' option for the home server on the Tailscale web dashboard. 
+Thinking "It would be troublesome if the server suddenly disappeared from Tailscale," I accessed the Tailscale web dashboard and enabled the **Machines tab → Server right-side menu (...) → Disable key expiry option.**
 
-Conversely, I'm using the laptop with key expiry still enabled.
+Conversely, I left the laptop's key expiry as is.
 
 --------------------------------------------------------------------------------
 
-### 5.2 UFW Configuration
+### 5.2 UFW Settings
 
-I adjusted the firewall to **only accept SSH connections from Tailscale and the local LAN**, not the entire internet. This makes the SSH port appear closed to outside port scans targeting the home server's public IP.
+I adjusted the firewall to accept SSH only from **Tailscale + Home LAN**, not the entire internet. This way, even if a port scan is performed on the home server's public IP from the outside, the SSH port appears closed.
 
-However, this has drawbacks, so I recommend choosing based on your environment.
+However, there are downsides, so I recommend choosing according to your environment.
 
-- Drawbacks:
-    - No way to access the server if Tailscale fails outside the home.
-    - No way to access the server if there's an issue with the Tailscale account or key outside the home.
-    - No way to access the server if the external Wi-Fi blocks Tailscale traffic.
+- Cons:
+  - If Tailscale goes down externally, there is no way to access the server.
+  - If there is an issue with the Tailscale account or key externally, there is no way to access the server.
+  - If the Wi-Fi used externally blocks Tailscale traffic, there is no way to access the server.
 
-ㅤ
+#### [ 5.2.1 Allow Tailscale ]
 
-As before, I'll assume the SSH port is `2222` for the example (you should use your actual port).
+I specifically allowed only traffic coming through Tailscale. Usually, the Tailscale interface name is `tailscale0`.
 
-#### [ 5.2.1 Allowing Tailscale ]
-
-I'll specifically allow traffic coming through Tailscale. The Tailscale interface name is typically `tailscale0`.
+As before, I assume the SSH port is `2222`. (In reality, you must use the port you are using.)
 
 ```sh
 # Check interface name (usually tailscale0)
@@ -561,9 +566,9 @@ sudo ufw allow in on tailscale0 to any port 2222 proto tcp
 sudo ufw status
 ```
 
-#### [ 5.2.2 Allowing Local LAN ]
+#### [ 5.2.2 Allow Home LAN ]
 
-I configured it so other devices within the home can also connect (without Tailscale). 
+I configured it so that other devices inside the house (without Tailscale) can also connect.
 
 First, I checked the server's IP range.
 
@@ -571,7 +576,7 @@ First, I checked the server's IP range.
 ip a
 ```
 
-In the output, `inet 192.168.0.50/24 ...`, the `/24` means that devices with the same first three octets (`192.168.0`) are considered a single group. So, for the UFW rule, I'll enter the entire range: `192.168.0.0/24`.
+In the output `inet 192.168.0.50/24 ...`, `/24` means that devices with the same first three blocks (`192.168.0`) are viewed as one group. So, for the UFW rule, you can enter `192.168.0.0/24` representing the entire range.
 
 ```sh
 sudo ufw allow from 192.168.0.0/24 to any port 2222 proto tcp
@@ -580,9 +585,9 @@ sudo ufw allow from 192.168.0.0/24 to any port 2222 proto tcp
 sudo ufw status
 ```
 
-#### [ 5.2.3 Removing Global Port Allowance ]
+#### [ 5.2.3 Remove Global Port Allow ]
 
-Finally, I removed the previously added rule that allowed connections to port `2222` from everywhere.
+inally, I removed the previously added "Allow port `2222` from everywhere" rule.
 
 ```sh
 sudo ufw delete allow 2222/tcp
