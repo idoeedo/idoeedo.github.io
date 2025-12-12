@@ -1,0 +1,17 @@
+{{- $type := .Get 0 | default "default" -}}
+{{- $title := .Get "title" | default (.Get 1) -}}
+{{- $emoji := "💡" -}}
+
+{{- if .Get "emoji" }}{{ $emoji = .Get "emoji" }}{{ end -}}
+
+<div class="note note-{{ $type }}">
+    <div class="note-icon">{{ $emoji }}</div>
+    <div class="note-wrapper">
+        {{- if $title -}}
+            <div class="note-title">{{ $title }}</div>
+        {{- end -}}
+        <div class="note-content">
+            {{ .Inner | markdownify }}
+        </div>
+    </div>
+</div>
