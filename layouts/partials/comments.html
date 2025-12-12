@@ -5,6 +5,7 @@
 
 {{ if .Params.comments | default true }}
     {{ $giscus := .Site.Params.giscus }}
+
     <script 
         src="https://giscus.app/client.js"
         data-repo="{{ $giscus.repo }}"
@@ -17,9 +18,37 @@
         data-reactions-enabled="{{ $giscus.reactionsEnabled }}"
         data-emit-metadata="{{ $giscus.emitMetadata }}"
         data-input-position="{{ $giscus.inputPosition }}"
-        data-theme="{{ $giscus.theme }}"
+        data-loading="{{ .Site.Params.giscus.loading }}"
         data-lang="{{ .Lang }}"
         crossorigin="anonymous"
         async>
     </script>
+
+    <script>
+        function getGiscusTheme() {
+            const isDark = document.querySelector('[data-theme="dark"]');
+            return isDark ? "transparent_dark" : "light";
+        }
+
+        function setGiscusTheme() {
+            const iframe = document.querySelector('iframe.giscus-frame');
+            if (!iframe) return;
+            const theme = getGiscusTheme();
+            iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: theme } } }, 'https://giscus.app');
+        }
+
+        const themeToggle = document.querySelector('#theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                setTimeout(setGiscusTheme, 200);
+            });
+        }
+
+        window.addEventListener('message', function (event) {
+            if (event.origin === 'https://giscus.app') {
+                setGiscusTheme();
+            }
+        });
+    </script>
+
 {{ end }}

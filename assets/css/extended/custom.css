@@ -6,19 +6,16 @@
 
   /* Typography: Font Size */
   --fs-base: 1rem;
-  --fs-code: 0.825rem;
+  --fs-code: 0.85rem;
   --fs-h1: 1.875rem;
   --fs-h2: 1.5rem;
   --fs-h3: 1.25rem;
   --fs-toc: 0.9rem;
+  --fs-figcaption: 0.9rem;
 
   /* Typography: Line Height */
-  --lh-base: 1.6;
-  --lh-code: 1.6;
-  --lh-h1: 1.6;
-  --lh-h2: 1.6;
-  --lh-h3: 1.6;
-  --lh-toc: 1.6;
+  --lh-base: 1.65;
+  --lh-tight: 1.3;
 
   /* Layout Dimensions */
   --main-width: 720px;    /* 기존 변수 */
@@ -57,12 +54,19 @@
   /* Semantic Colors */
   --color-inline-code-text: #EB5757;                 /* 노션 색상 */
   --color-inline-code-bg: rgba(135, 131, 120, .15);  /* 노션 색상 */
-
+  --color-figcaption: var(--color-gray-4);
   --color-link: var(--color-blue-3);
   --color-link-hover: var(--color-gold-2);
   --color-toc-bar: var(--color-gray-4);
   --color-toc-bar-active: var(--color-gold-2);
   --color-toc-divider: var(--color-gray-3);
+}
+
+[data-theme="dark"] {
+  --color-inline-code-bg: rgba(135, 131, 120, .25);
+  --color-figcaption: var(--color-gray-3);
+  --color-link: var(--color-blue-2);
+  --color-toc-divider: var(--color-gray-5);
 }
 
 
@@ -73,26 +77,29 @@
 body {
   font-size: var(--fs-base);
   line-height: var(--lh-base);
+  word-break: keep-all;
 }
 
 /* -------------------------------
     Headings
 ------------------------------- */
+:is(h1, h2, h3, h4, h5, h6) {
+    line-height: var(--lh-tight);
+}
+
 :is(h1, .first-entry .entry-header h1, .post-title) {
   font-size: var(--fs-h1);
-  line-height: var(--lh-h1);
+  margin-bottom: 1rem;
 }
 
 :is(h2, .post-content h2) {
   font-size: var(--fs-h2);
-  line-height: var(--lh-h2);
-  scroll-margin-top: var(--header-height);
+  scroll-margin-top: calc(var(--header-height) + 10px);
 }
 
 :is(h3, .post-content h3) {
   font-size: var(--fs-h3);
-  line-height: var(--lh-h3);
-  scroll-margin-top: var(--header-height);
+  scroll-margin-top: calc(var(--header-height) + 10px);
 }
 
 /* -------------------------------
@@ -119,61 +126,148 @@ body {
 ============================================================================= */
 
 .post-content { 
-  /* Paragraphs */
+
+  /* -------------------------------
+      Paragraphs
+  ------------------------------- */
   & p {
     text-indent: 0.7rem;
     margin-block: var(--gap-content-p);
   }
 
-  /* Headings Styles inside content */    
+  /* -------------------------------
+      Headings Styles inside content
+  ------------------------------- */
   & h4 { 
-    margin-top: 2.5rem; 
+    margin-top: 3rem; 
   }
 
-  /* Links */
+  /* -------------------------------
+      Links
+  ------------------------------- */
   & a {
     box-shadow: none;
-    color: var(--color-link);
+    color: var(--color-link); 
+    transition: color 0.1s;
 
     &:hover {
       color: var(--color-link-hover);
+      text-decoration: underline;
     }
   }
 
-  /* Horizontal Rule */
+  /* -------------------------------
+      Horizontal Rule
+  ------------------------------- */
   & hr {
     margin: 3rem 0;
   }
 
-  /* Inline Code */
+  /* -------------------------------
+      Inline Code
+  ------------------------------- */
   & code {
-    margin: 0;
+    margin: 0 0.2rem;
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-size: var(--fs-code);
-    line-height: var(--lh-code);
     background: var(--color-inline-code-bg);
     color: var(--color-inline-code-text);
   }
 
-  /* Desktop Layout */
-  @media (min-width: 992px) {
-    & :is(h2, h3) {
-      display: flex;
-      gap: 0.35rem;
+  /* -------------------------------
+      Image & Figures
+  ------------------------------- */
+  & figure {
+    margin: 2rem 0;
+    text-align: center;
 
-      & .anchor {
-        display: inline-block;
-        margin: 0;
-        padding: 0;
-        order: -1;
-        color: var(--color-blue-3);
-        font-weight: inherit;
+    & > figcaption {
+      color: var(--color-figcaption);
+      font-size: var(--fs-figcaption);
+      font-weight: 400;
+    }
+  }
 
-        &:hover {
-          color: var(--color-link-hover);
-        }
+  & img {
+    border-radius: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* -------------------------------
+      Anchor Links
+  ------------------------------- */
+  & :is(h2, h3) {
+    display: flex;
+    gap: 0.35rem;
+
+    & .anchor {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      order: -1;
+      color: var(--color-blue-3);
+      font-weight: inherit;
+
+      &:hover {
+        color: var(--color-link-hover);
       }
+    }
+  }
+
+  /* -------------------------------
+      Note
+  ------------------------------- */
+  & .note {
+    padding: 16px;
+    margin: 1.5rem 0;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    background-color: var(--entry);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+
+    & .note-icon {
+      margin-right: 12px;
+      font-size: 1.25rem;
+      height: 1.5rem;
+      display: flex;
+      align-items: center;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    & .note-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    & .note-title {
+      font-weight: 700;
+      margin-bottom: 10px; /* 내용과의 간격 */
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    & .note-content {
+      line-height: 1.6;
+      margin: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    & .note-content p {
+      margin: 0;
+      text-indent: 0;
+    }
+
+    & .note-content p + p {
+      margin-top: 0.5rem;
     }
   }
 }
@@ -185,7 +279,7 @@ body {
 
 .toc {
   font-size: var(--fs-toc);
-  line-height: var(--lh-toc);
+  line-height: var(--lh-base);
   border: none;
 
   & ul {
@@ -200,7 +294,7 @@ body {
     position: relative;
     display: inline-block;
     padding-left: 0.6rem;
-    line-height: 1.5;
+    transition: all 0.1s;
 
     /* Active Indicator Bar */
     &::before {
@@ -268,11 +362,11 @@ body {
 
 
 /* =============================================================================
-    Layout & Responsibility
+    Layout Adjustment
 ============================================================================= */
 
 .main {
-  width: 95%; /* Mobile Default */
+  width: 100%; /* Mobile Default */
 
   @media (min-width: 992px) {
     width: 60%;
