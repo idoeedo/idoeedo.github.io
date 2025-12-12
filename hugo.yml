@@ -120,6 +120,8 @@ params:
   showtoc: true
   tocopen: true
 
+  math: true
+
   assets:
     disableHLJS: true  # to disable highlight.js
     # disableFingerprinting: true
@@ -202,7 +204,6 @@ params:
     reactionsEnabled: "1"
     emitMetadata: "0"
     inputPosition: "top"
-    theme: "preferred_color_scheme"
     loading: "lazy"
 
 # ==============================================================================
@@ -229,4 +230,3 @@ markup:
     lineNos: true
     noClasses: true
     style: github-dark
-
