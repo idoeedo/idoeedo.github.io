@@ -1,0 +1,50 @@
+---
+import type { Translation } from "@/utils/getTranslations";
+
+type Props = {
+  translations: Translation[];
+};
+
+const { translations } = Astro.props;
+---
+
+{
+  translations.length > 0 && (
+    <nav aria-label="Language switcher" class="flex items-center gap-2 text-sm">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="size-5 opacity-80"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+        <path d="M2 12h20" />
+      </svg>
+      <ul class="flex items-center gap-1">
+        {translations.map((t, i) => (
+          <>
+            {i > 0 && <span class="opacity-50">|</span>}
+            <li>
+              {t.isCurrent ? (
+                <span class="font-semibold text-accent">{t.label}</span>
+              ) : (
+                <a
+                  href={t.path}
+                  class="border-b border-dashed border-foreground hover:border-accent hover:text-accent"
+                  hreflang={t.lang}
+                >
+                  {t.label}
+                </a>
+              )}
+            </li>
+          </>
+        ))}
+      </ul>
+    </nav>
+  )
+}

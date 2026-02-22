@@ -1,0 +1,115 @@
+---
+type Heading = {
+  depth: number;
+  slug: string;
+  text: string;
+};
+
+type Props = {
+  headings: Heading[];
+  sidebar?: boolean;
+};
+
+const { headings, sidebar = false } = Astro.props;
+
+const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  filteredHeadings.length > 0 &&
+    (sidebar ? (
+      <aside class="absolute left-full top-0 bottom-0 ml-8 hidden xl:block">
+        <div class="sticky top-24 w-56">
+          <p class="mb-3 text-sm font-semibold">Table of Contents</p>
+          <nav id="toc-sidebar-nav">
+            <ul class="flex flex-col gap-1.5 border-s border-border ps-3 text-xs">
+              {filteredHeadings.map(h => (
+                <li class:list={[{ "ms-3": h.depth === 3 }]}>
+                  <a
+                    href={`#${h.slug}`}
+                    data-toc-link={h.slug}
+                    class="leading-snug opacity-50 transition-opacity hover:text-accent hover:opacity-100"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <script is:inline data-astro-rerun>
+        (function () {
+          const nav = document.getElementById("toc-sidebar-nav");
+          if (!nav) return;
+
+          const links = nav.querySelectorAll("a[data-toc-link]");
+          const slugs = Array.from(links).map(a => a.dataset.tocLink);
+          const headings = slugs
+            .map(s => document.getElementById(s))
+            .filter(Boolean);
+
+          if (headings.length === 0) return;
+
+          let activeSlug = "";
+
+          function setActive(slug) {
+            if (slug === activeSlug) return;
+            activeSlug = slug;
+            links.forEach(a => {
+              if (a.dataset.tocLink === slug) {
+                a.classList.remove("opacity-50");
+                a.classList.add("opacity-100", "text-accent", "font-semibold");
+              } else {
+                a.classList.add("opacity-50");
+                a.classList.remove(
+                  "opacity-100",
+                  "text-accent",
+                  "font-semibold"
+                );
+              }
+            });
+          }
+
+          function onScroll() {
+            const offset = 150;
+            let current = headings[0].id;
+
+            for (const h of headings) {
+              if (h.getBoundingClientRect().top <= offset) {
+                current = h.id;
+              } else {
+                break;
+              }
+            }
+
+            setActive(current);
+          }
+
+          document.addEventListener("scroll", onScroll, { passive: true });
+          onScroll();
+        })();
+      </script>
+    ) : (
+      <details class="mt-6 rounded-lg border border-border p-4 xl:hidden">
+        <summary class="cursor-pointer text-lg font-semibold">
+          Table of Contents
+        </summary>
+        <nav class="mt-3">
+          <ul class="flex flex-col gap-1.5 text-sm">
+            {filteredHeadings.map(h => (
+              <li class:list={[{ "ms-4": h.depth === 3 }]}>
+                <a
+                  href={`#${h.slug}`}
+                  class="opacity-70 transition-opacity hover:text-accent hover:opacity-100"
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    ))
+}

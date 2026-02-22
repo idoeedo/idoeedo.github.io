@@ -72,10 +72,42 @@
 
     .astro-code code {
       @apply flex-[1_0_100%] bg-inherit p-0;
+      counter-reset: line;
+    }
+
+    .astro-code code .line::before {
+      counter-increment: line;
+      content: counter(line);
+      @apply mr-4 inline-block w-4 text-right opacity-30;
     }
 
     blockquote {
       @apply border-s-accent/80 wrap-break-word opacity-80;
+    }
+
+    blockquote.callout {
+      @apply rounded-lg border p-4 opacity-100 not-italic;
+    }
+
+    blockquote.callout p:first-of-type::before,
+    blockquote.callout p:last-of-type::after {
+      content: none;
+    }
+
+    blockquote.callout .callout-title {
+      @apply mt-0 mb-2 font-semibold;
+    }
+
+    blockquote.callout > :last-child {
+      @apply mb-0;
+    }
+
+    blockquote.callout-note,
+    blockquote.callout-tip,
+    blockquote.callout-important,
+    blockquote.callout-warning,
+    blockquote.callout-caution {
+      @apply border-border bg-muted/30;
     }
 
     details {

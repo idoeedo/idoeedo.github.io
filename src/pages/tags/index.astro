@@ -8,6 +8,10 @@ import Footer from "@/components/Footer.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 import { SITE } from "@/config";
 
+if (!SITE.showTags) {
+  return Astro.redirect("/404");
+}
+
 const posts = await getCollection("blog");
 
 let tags = getUniqueTags(posts);
